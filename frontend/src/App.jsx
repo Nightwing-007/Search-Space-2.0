@@ -3,6 +3,8 @@ import Visualizer from './components/Visualizer';
 import Controls from './components/Controls';
 import { useAlgorithmPlayback } from './hooks/useAlgorithmPlayback';
 import { runAlgorithm } from './services/api';
+import CodeViewer from './components/CodeViewer';
+import AnalyticsPanel from './components/AnalyticsPanel';
 
 function App() {
     const [algorithm, setAlgorithm] = useState('cycle-sort');
@@ -113,17 +115,43 @@ function App() {
                     {error && <div className="mt-6 text-red-400 text-sm bg-red-900/20 border border-red-900/50 p-3 rounded-lg backdrop-blur-sm">{error}</div>}
                 </div>
 
-                <div className="space-y-6">
-                    <Visualizer 
-                        currentStep={playback.currentStep} 
-                        isFinished={playback.isFinished}
-                    />
-                    
-                    <Controls 
-                        {...playback}
-                        hasSteps={steps.length > 0}
-                    />
-                </div>
+                {steps.length > 0 && (
+                    <div className="space-y-6">
+                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                            <div className="lg:col-span-2 space-y-6">
+                                <Visualizer 
+                                    currentStep={playback.currentStep} 
+                                    isFinished={playback.isFinished}
+                                    isQuizMode={playback.isQuizMode}
+                                    onPredictionClick={playback.handlePrediction}
+                                    nextStepIndices={playback.nextStepIndices}
+                                />
+                                
+                                <Controls 
+                                    {...playback}
+                                    hasSteps={steps.length > 0}
+                                />
+                            </div>
+                            
+                            <div className="space-y-6">
+                                <AnalyticsPanel 
+                                    algorithm={algorithm}
+                                    comparisons={playback.currentStep?.comparisonsSoFar}
+                                    writes={playback.currentStep?.writesSoFar}
+                                    isQuizMode={playback.isQuizMode}
+                                    quizScore={playback.quizScore}
+                                />
+                            </div>
+                        </div>
+                        
+                        <div className="w-full mt-6">
+                            <CodeViewer 
+                                algorithm={algorithm}
+                                activeLineNumber={playback.currentStep?.activeLineNumber}
+                            />
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );

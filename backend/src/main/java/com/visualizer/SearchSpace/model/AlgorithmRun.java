@@ -22,8 +22,8 @@ public class AlgorithmRun {
     @Column(name = "algorithm_type", nullable = false)
     private String algorithmType;
 
-    @Column(name = "custom_input", columnDefinition = "json")
-    private String customInput;
+    @Column(name = "array_size")
+    private Integer arraySize;
 
     @Column(name = "execution_time_ms")
     private Long executionTimeMs;

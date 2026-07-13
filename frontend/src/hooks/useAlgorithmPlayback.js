@@ -6,9 +6,13 @@ export const useAlgorithmPlayback = (steps) => {
     const [speed, setSpeed] = useState(500); // ms per step
     const timerRef = useRef(null);
 
+    const [isQuizMode, setIsQuizMode] = useState(false);
+    const [quizScore, setQuizScore] = useState({ correct: 0, total: 0 });
+
     const reset = useCallback(() => {
         setIsPlaying(false);
         setCurrentStepIndex(0);
+        setQuizScore({ correct: 0, total: 0 });
         if (timerRef.current) clearInterval(timerRef.current);
     }, []);
 
@@ -30,7 +34,7 @@ export const useAlgorithmPlayback = (steps) => {
     }, []);
 
     useEffect(() => {
-        if (isPlaying) {
+        if (isPlaying && !isQuizMode) {
             timerRef.current = setInterval(() => {
                 setCurrentStepIndex((prev) => {
                     if (prev < steps.length - 1) {
@@ -49,15 +53,43 @@ export const useAlgorithmPlayback = (steps) => {
         return () => {
             if (timerRef.current) clearInterval(timerRef.current);
         };
-    }, [isPlaying, speed, steps.length]);
+    }, [isPlaying, speed, steps.length, isQuizMode]);
 
-    const togglePlay = () => setIsPlaying(!isPlaying);
+    const togglePlay = () => {
+        if (isQuizMode) return; // Prevent auto-play during quiz mode
+        setIsPlaying(!isPlaying);
+    };
+
+    const toggleQuizMode = () => {
+        setIsQuizMode((prev) => {
+            if (!prev) setIsPlaying(false); // Stop playing when entering quiz mode
+            return !prev;
+        });
+    };
+
+    const handlePrediction = (predictedIndex) => {
+        if (!isQuizMode || currentStepIndex >= steps.length - 1) return;
+        
+        const nextStep = steps[currentStepIndex + 1];
+        if (!nextStep) return;
+
+        const isCorrect = nextStep.highlightIndices && nextStep.highlightIndices.includes(predictedIndex);
+        
+        setQuizScore(prev => ({
+            correct: prev.correct + (isCorrect ? 1 : 0),
+            total: prev.total + 1
+        }));
+
+        stepForward();
+    };
 
     const currentStep = steps[currentStepIndex] || null;
+    const nextStepIndices = currentStepIndex < steps.length - 1 ? steps[currentStepIndex + 1].highlightIndices : null;
 
     return {
         currentStepIndex,
         currentStep,
+        nextStepIndices,
         isPlaying,
         speed,
         setSpeed,
@@ -65,6 +97,10 @@ export const useAlgorithmPlayback = (steps) => {
         stepForward,
         stepBackward,
         reset,
-        isFinished: currentStepIndex === steps.length - 1 && steps.length > 0
+        isFinished: currentStepIndex === steps.length - 1 && steps.length > 0,
+        isQuizMode,
+        toggleQuizMode,
+        quizScore,
+        handlePrediction
     };
 };

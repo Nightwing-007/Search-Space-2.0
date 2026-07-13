@@ -6,6 +6,13 @@ This current version (2.0) expands upon those foundational concepts by providing
 
 By separating the algorithmic logic into a deterministic backend engine and rendering the state changes on a dynamic frontend, the system ensures accurate visualizations of complex operations, including array manipulations, cycle sorts, binary searches, and bitwise operations.
 
+## Key Features
+
+*   **HTML5 Canvas Rendering:** Transitions standard DOM-based visualizations to a high-performance Canvas API engine for silky smooth animations and beautiful gradient styling, even with large data sets.
+*   **"Predict the Step" Quiz Mode:** A built-in gamification module. Users can pause execution and try to predict exactly which element will be manipulated next by clicking on the Canvas. Live score tracking is provided.
+*   **Live Pseudocode Tracking:** Integrated with `react-syntax-highlighter`, providing a real-time view of the algorithm's code. The system highlights the precise line currently executing in the backend engine.
+*   **Real-time Analytics:** A live telemetry panel streaming mathematical metrics directly from the backend, including Time Complexity, Comparisons So Far, and Array Writes So Far.
+
 ## Architecture
 
 The project is structured as a modern full-stack application:
@@ -61,12 +68,10 @@ Ensure you have the following installed on your local development environment:
 
 ## Usage Instructions
 
-1.  Open your web browser and navigate to the frontend URL (`http://localhost:5173`).
+1.  Open your web browser and navigate to the frontend URL (e.g., `http://localhost:5173` or `http://localhost:5174`).
 2.  Select an algorithm from the dropdown menu (e.g., Cycle Sort, Binary Search).
 3.  Provide a comma-separated list of integers as the input array. For search algorithms, specify the target value.
 4.  Click "Generate Visualization" to fetch the deterministic steps from the backend.
 5.  Use the playback controls at the bottom of the screen to play, pause, step through, or adjust the speed of the visualization.
-
-## License
-
-This project is licensed under the MIT License.
+6.  **Quiz Mode**: Toggle the "Predict the Step (Quiz)" switch in the controls panel. Once active, the animation halts, and you must click the correct bar on the canvas that will be manipulated in the very next algorithmic step to earn points.
+7.  **Analytics & Pseudocode**: Observe the live code panel to understand the algorithm's structure and watch the analytics panel to see the efficiency (comparisons and writes) in real-time.

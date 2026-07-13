@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/algorithms")
-@CrossOrigin(origins = "http://localhost:5173") // Allow requests from local React dev server
+@CrossOrigin(origins = "*") // Allow requests from any local React dev server
 public class AlgorithmController {
 
     @Autowired
@@ -40,5 +40,19 @@ public class AlgorithmController {
     public ResponseEntity<AlgorithmResponse> runArrayManipulation(@RequestBody AlgorithmRequest request) {
         AlgorithmResponse response = algorithmService.arrayManipulation(request.getArray());
         return ResponseEntity.ok(response);
+    }
+    
+    @Autowired
+    private com.visualizer.SearchSpace.repository.QuizScoreRepository quizScoreRepository;
+    
+    @PostMapping("/save-score")
+    public ResponseEntity<?> saveQuizScore(@RequestBody com.visualizer.SearchSpace.dto.QuizScoreRequest request) {
+        com.visualizer.SearchSpace.model.QuizScore score = new com.visualizer.SearchSpace.model.QuizScore();
+        score.setAlgorithmType(request.getAlgorithmType());
+        score.setCorrectPredictions(request.getCorrectPredictions());
+        score.setTotalPredictions(request.getTotalPredictions());
+        
+        quizScoreRepository.save(score);
+        return ResponseEntity.ok().build();
     }
 }
