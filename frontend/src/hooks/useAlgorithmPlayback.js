@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
+import toast from 'react-hot-toast';
 
 export const useAlgorithmPlayback = (steps) => {
     const [currentStepIndex, setCurrentStepIndex] = useState(0);
@@ -75,6 +76,12 @@ export const useAlgorithmPlayback = (steps) => {
 
         const isCorrect = nextStep.highlightIndices && nextStep.highlightIndices.includes(predictedIndex);
         
+        if (isCorrect) {
+            toast.success("Correct Prediction!", { icon: '🎯', style: { borderRadius: '10px', background: '#333', color: '#fff' }});
+        } else {
+            toast.error("Missed! Try again.", { style: { borderRadius: '10px', background: '#333', color: '#fff' }});
+        }
+
         setQuizScore(prev => ({
             correct: prev.correct + (isCorrect ? 1 : 0),
             total: prev.total + 1

@@ -64,9 +64,9 @@ const CodeViewer = ({ algorithm, activeLineNumber }) => {
     const code = ALGORITHM_CODE[algorithm] || '// Select an algorithm';
 
     return (
-        <div className="w-full min-h-[500px] backdrop-blur-xl bg-white/5 rounded-2xl shadow-[0_8px_32px_0_rgba(0,0,0,0.36)] border border-white/10 p-6 flex flex-col">
-            <h3 className="text-lg font-semibold text-emerald-300 mb-4 uppercase tracking-wider">Pseudocode</h3>
-            <div className="flex-grow overflow-auto rounded-xl bg-[#1d1f21] border border-white/5 shadow-inner">
+        <div className="w-full min-h-[500px] backdrop-blur-xl bg-white/[0.03] rounded-2xl shadow-[0_8px_32px_0_rgba(0,0,0,0.36)] border border-white/[0.06] p-6 flex flex-col">
+            <h3 className="text-sm font-semibold text-emerald-400/90 mb-4 uppercase tracking-widest">Pseudocode Tracker</h3>
+            <div className="flex-grow overflow-auto rounded-xl bg-[#111116] border border-white/[0.02] shadow-inner font-mono text-sm relative">
                 <SyntaxHighlighter 
                     language="javascript" 
                     style={atomDark}
@@ -76,16 +76,21 @@ const CodeViewer = ({ algorithm, activeLineNumber }) => {
                         margin: 0, 
                         padding: '1.5rem', 
                         background: 'transparent',
-                        fontSize: '1.1rem',
-                        lineHeight: '1.6'
+                        fontSize: '14px',
+                        lineHeight: '1.7',
+                        fontFamily: 'inherit' // Inherits JetBrains Mono from parent
                     }}
                     lineProps={lineNumber => {
-                        let style = { display: 'block' };
-                        if (lineNumber === activeLineNumber) {
-                            style.backgroundColor = 'rgba(16, 185, 129, 0.2)'; // Emerald highlight
-                            style.borderLeft = '4px solid #34d399';
-                        }
-                        return { style };
+                        const isActive = lineNumber === activeLineNumber;
+                        return {
+                            style: { 
+                                display: 'block',
+                                backgroundColor: isActive ? 'rgba(16, 185, 129, 0.15)' : 'transparent',
+                                borderLeft: isActive ? '4px solid #34d399' : '4px solid transparent',
+                                transition: 'background-color 0.3s ease, border-color 0.3s ease'
+                            },
+                            className: isActive ? 'active-line' : ''
+                        };
                     }}
                 >
                     {code}

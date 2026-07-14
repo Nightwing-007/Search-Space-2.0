@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Toaster } from 'react-hot-toast';
 import Visualizer from './components/Visualizer';
 import Controls from './components/Controls';
 import { useAlgorithmPlayback } from './hooks/useAlgorithmPlayback';
@@ -16,6 +18,34 @@ function App() {
     const [error, setError] = useState(null);
 
     const playback = useAlgorithmPlayback(steps);
+
+    // Global keyboard shortcuts
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            // Don't trigger if user is typing in an input
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') return;
+
+            switch (e.code) {
+                case 'Space':
+                    e.preventDefault();
+                    playback.togglePlay();
+                    break;
+                case 'ArrowRight':
+                    e.preventDefault();
+                    playback.stepForward();
+                    break;
+                case 'ArrowLeft':
+                    e.preventDefault();
+                    playback.stepBackward();
+                    break;
+                default:
+                    break;
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [playback]);
 
     const handleRun = async () => {
         setIsLoading(true);
@@ -39,32 +69,48 @@ function App() {
     };
 
     return (
-        <div className="relative min-h-screen p-8 overflow-hidden">
+        <div className="relative min-h-screen p-8 overflow-hidden bg-slate-950 font-sans">
+            <Toaster position="bottom-right" />
+            
             {/* Animated Background Blobs */}
             <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
-                <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-500/20 rounded-full mix-blend-screen filter blur-3xl opacity-50 animate-blob"></div>
-                <div className="absolute top-1/3 right-1/4 w-96 h-96 bg-emerald-500/20 rounded-full mix-blend-screen filter blur-3xl opacity-50 animate-blob animation-delay-2000"></div>
-                <div className="absolute bottom-1/4 left-1/2 w-96 h-96 bg-purple-500/20 rounded-full mix-blend-screen filter blur-3xl opacity-50 animate-blob animation-delay-4000"></div>
+                <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-blue-600/10 rounded-full mix-blend-screen filter blur-[100px] opacity-60 animate-blob"></div>
+                <div className="absolute top-1/3 right-1/4 w-[500px] h-[500px] bg-emerald-600/10 rounded-full mix-blend-screen filter blur-[100px] opacity-60 animate-blob animation-delay-2000"></div>
+                <div className="absolute bottom-1/4 left-1/2 w-[500px] h-[500px] bg-purple-600/10 rounded-full mix-blend-screen filter blur-[100px] opacity-60 animate-blob animation-delay-4000"></div>
             </div>
 
-            <div className="max-w-5xl mx-auto space-y-10 relative z-10">
+            <div className="max-w-7xl mx-auto space-y-10 relative z-10">
                 <header className="text-center space-y-3 mt-4">
-                    <h1 className="text-5xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-emerald-400 to-purple-400 drop-shadow-sm">
-                        SearchSpace
-                    </h1>
-                    <p className="text-slate-300 font-light text-lg">
+                    <motion.h1 
+                        initial={{ opacity: 0, y: -20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="text-5xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-emerald-400 to-purple-400 drop-shadow-sm"
+                    >
+                        SearchSpace 2.0
+                    </motion.h1>
+                    <motion.p 
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 0.2 }}
+                        className="text-slate-400 font-medium tracking-wide text-lg"
+                    >
                         Interactive, step-by-step visualizations for sorting and searching
-                    </p>
+                    </motion.p>
                 </header>
 
-                <div className="backdrop-blur-xl bg-white/5 p-8 rounded-2xl shadow-[0_8px_32px_0_rgba(0,0,0,0.36)] border border-white/10">
+                <motion.div 
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.3 }}
+                    className="backdrop-blur-xl bg-white/[0.02] p-8 rounded-2xl shadow-[0_8px_32px_0_rgba(0,0,0,0.36)] border border-white/[0.05]"
+                >
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                         <div className="space-y-2">
-                            <label className="text-sm font-semibold text-slate-300 uppercase tracking-wider">Algorithm</label>
+                            <label className="text-xs font-semibold text-slate-400 uppercase tracking-widest">Algorithm</label>
                             <select 
                                 value={algorithm} 
                                 onChange={(e) => setAlgorithm(e.target.value)}
-                                className="w-full bg-black/20 border border-white/10 rounded-xl p-3 focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 focus:outline-none transition-all text-slate-100 backdrop-blur-md"
+                                className="w-full bg-slate-900/50 border border-white/10 rounded-xl p-3 focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 focus:outline-none transition-all text-slate-100 backdrop-blur-md"
                             >
                                 <option value="cycle-sort" className="bg-slate-900">Cycle Sort</option>
                                 <option value="binary-search" className="bg-slate-900">Binary Search</option>
@@ -74,27 +120,31 @@ function App() {
                         </div>
                         
                         <div className="space-y-2">
-                            <label className="text-sm font-semibold text-slate-300 uppercase tracking-wider">Input Array</label>
+                            <label className="text-xs font-semibold text-slate-400 uppercase tracking-widest">Input Array</label>
                             <input 
                                 type="text"
                                 value={inputArray}
                                 onChange={(e) => setInputArray(e.target.value)}
                                 placeholder="e.g. 5, 2, 1, 4, 3"
-                                className="w-full bg-black/20 border border-white/10 rounded-xl p-3 focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 focus:outline-none transition-all placeholder-slate-500 text-slate-100 backdrop-blur-md"
+                                className="w-full bg-slate-900/50 border border-white/10 rounded-xl p-3 focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 focus:outline-none transition-all placeholder-slate-600 text-slate-100 backdrop-blur-md"
                             />
                         </div>
 
                         {algorithm === 'binary-search' && (
-                            <div className="space-y-2">
-                                <label className="text-sm font-semibold text-slate-300 uppercase tracking-wider">Target</label>
+                            <motion.div 
+                                initial={{ opacity: 0, scale: 0.95 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                className="space-y-2"
+                            >
+                                <label className="text-xs font-semibold text-slate-400 uppercase tracking-widest">Target</label>
                                 <input 
                                     type="number"
                                     value={target}
                                     onChange={(e) => setTarget(e.target.value)}
                                     placeholder="Search target"
-                                    className="w-full bg-black/20 border border-white/10 rounded-xl p-3 focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 focus:outline-none transition-all placeholder-slate-500 text-slate-100 backdrop-blur-md"
+                                    className="w-full bg-slate-900/50 border border-white/10 rounded-xl p-3 focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 focus:outline-none transition-all placeholder-slate-600 text-slate-100 backdrop-blur-md"
                                 />
-                            </div>
+                            </motion.div>
                         )}
                     </div>
                     
@@ -102,7 +152,7 @@ function App() {
                         <button 
                             onClick={handleRun}
                             disabled={isLoading}
-                            className="bg-gradient-to-r from-blue-600 to-emerald-600 hover:from-blue-500 hover:to-emerald-500 text-white font-bold py-3 px-8 rounded-xl shadow-lg shadow-emerald-900/20 transform hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:hover:scale-100 flex items-center justify-center min-w-[200px]"
+                            className="bg-gradient-to-r from-blue-600 to-emerald-600 hover:from-blue-500 hover:to-emerald-500 text-white font-bold py-3 px-8 rounded-xl shadow-lg shadow-emerald-900/20 transform hover:scale-105 active:scale-95 transition-all duration-300 disabled:opacity-50 disabled:hover:scale-100 flex items-center justify-center min-w-[200px]"
                         >
                             {isLoading ? (
                                 <span className="animate-pulse">Processing...</span>
@@ -112,46 +162,62 @@ function App() {
                         </button>
                     </div>
                     
-                    {error && <div className="mt-6 text-red-400 text-sm bg-red-900/20 border border-red-900/50 p-3 rounded-lg backdrop-blur-sm">{error}</div>}
-                </div>
+                    {error && (
+                        <motion.div 
+                            initial={{ opacity: 0, y: -10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="mt-6 text-red-400 text-sm bg-red-900/20 border border-red-900/50 p-3 rounded-lg backdrop-blur-sm"
+                        >
+                            {error}
+                        </motion.div>
+                    )}
+                </motion.div>
 
-                {steps.length > 0 && (
-                    <div className="space-y-6">
-                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                            <div className="lg:col-span-2 space-y-6">
-                                <Visualizer 
-                                    currentStep={playback.currentStep} 
-                                    isFinished={playback.isFinished}
-                                    isQuizMode={playback.isQuizMode}
-                                    onPredictionClick={playback.handlePrediction}
-                                    nextStepIndices={playback.nextStepIndices}
-                                />
+                <AnimatePresence>
+                    {steps.length > 0 && (
+                        <motion.div 
+                            initial={{ opacity: 0, y: 30 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95 }}
+                            transition={{ duration: 0.5, type: 'spring' }}
+                            className="space-y-6"
+                        >
+                            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                                <div className="lg:col-span-2 space-y-6">
+                                    <Visualizer 
+                                        currentStep={playback.currentStep} 
+                                        isFinished={playback.isFinished}
+                                        isQuizMode={playback.isQuizMode}
+                                        onPredictionClick={playback.handlePrediction}
+                                        nextStepIndices={playback.nextStepIndices}
+                                    />
+                                    
+                                    <Controls 
+                                        {...playback}
+                                        hasSteps={steps.length > 0}
+                                    />
+                                </div>
                                 
-                                <Controls 
-                                    {...playback}
-                                    hasSteps={steps.length > 0}
-                                />
+                                <div className="space-y-6">
+                                    <AnalyticsPanel 
+                                        algorithm={algorithm}
+                                        comparisons={playback.currentStep?.comparisonsSoFar}
+                                        writes={playback.currentStep?.writesSoFar}
+                                        isQuizMode={playback.isQuizMode}
+                                        quizScore={playback.quizScore}
+                                    />
+                                </div>
                             </div>
                             
-                            <div className="space-y-6">
-                                <AnalyticsPanel 
+                            <div className="w-full mt-6">
+                                <CodeViewer 
                                     algorithm={algorithm}
-                                    comparisons={playback.currentStep?.comparisonsSoFar}
-                                    writes={playback.currentStep?.writesSoFar}
-                                    isQuizMode={playback.isQuizMode}
-                                    quizScore={playback.quizScore}
+                                    activeLineNumber={playback.currentStep?.activeLineNumber}
                                 />
                             </div>
-                        </div>
-                        
-                        <div className="w-full mt-6">
-                            <CodeViewer 
-                                algorithm={algorithm}
-                                activeLineNumber={playback.currentStep?.activeLineNumber}
-                            />
-                        </div>
-                    </div>
-                )}
+                        </motion.div>
+                    )}
+                </AnimatePresence>
             </div>
         </div>
     );
