@@ -75,3 +75,10 @@ Ensure you have the following installed on your local development environment:
 5.  Use the playback controls at the bottom of the screen to play, pause, step through, or adjust the speed of the visualization.
 6.  **Quiz Mode**: Toggle the "Predict the Step (Quiz)" switch in the controls panel. Once active, the animation halts, and you must click the correct bar on the canvas that will be manipulated in the very next algorithmic step to earn points.
 7.  **Analytics & Pseudocode**: Observe the live code panel to understand the algorithm's structure and watch the analytics panel to see the efficiency (comparisons and writes) in real-time.
+
+## Changelog
+
+### Recent Fixes
+* **CI Workflow (Permissions):** Granted execute permissions to the backend Maven wrapper (`mvnw`) to fix CI pipeline permission denied errors.
+* **Jest Configuration:** Fixed a typo in the `frontend/package.json` Jest configuration, correcting `setupFilesAfterSetup` to the standard `setupFilesAfterEnv`.
+* **React Hooks (Infinite Loop):** Fixed an infinite render loop warning inside the `useAlgorithmPlayback` hook tests by conditionally setting the `quizScore` state during reset, preventing unnecessary deep updates.
