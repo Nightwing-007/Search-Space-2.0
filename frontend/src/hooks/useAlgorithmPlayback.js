@@ -13,7 +13,7 @@ export const useAlgorithmPlayback = (steps) => {
     const reset = useCallback(() => {
         setIsPlaying(false);
         setCurrentStepIndex(0);
-        setQuizScore({ correct: 0, total: 0 });
+        setQuizScore(prev => prev.correct === 0 && prev.total === 0 ? prev : { correct: 0, total: 0 });
         if (timerRef.current) clearInterval(timerRef.current);
     }, []);
 
